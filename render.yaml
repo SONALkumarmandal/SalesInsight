@@ -1,21 +1,13 @@
 services:
   - type: web
-    name: mern-backend
+    name: salesinsight
     env: node
-    rootDir: backend
-    buildCommand: npm install
+    plan: free
+    buildCommand: |
+      apt-get update && apt-get install -y python3 python3-pip
+      pip3 install -r requirements.txt
+      npm install
     startCommand: node server.js
     envVars:
-      - key: NODE_ENV
-        value: production
-    autoDeploy: true
-
-  - type: web
-    name: mern-frontend
-    env: node
-    rootDir: frontend
-    buildCommand: npm install && npm run build
-    staticPublishPath: dist
-    envVars:
-      - key: VITE_API_URL
-        value: https://mern-backend.onrender.com  # Replace this with your actual backend Render URL
+      - key: PYTHON_PATH
+        value: /usr/bin/python3

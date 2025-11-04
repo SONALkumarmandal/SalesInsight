@@ -11,7 +11,14 @@ import {
   Title,
 } from "chart.js";
 
-ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend, Title);
+ChartJS.register(
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend,
+  Title
+);
 
 const Dashboard = () => {
   const [file, setFile] = useState(null);
@@ -33,9 +40,14 @@ const Dashboard = () => {
 
     setLoading(true);
     try {
-      const response = await axios.post("https://salesinsight.onrender.com", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const response = await axios.post(
+        import.meta.env.VITE_API_URL,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+
       setInsights(response.data);
     } catch (error) {
       console.error("Error uploading file:", error);
@@ -60,7 +72,9 @@ const Dashboard = () => {
 
   return (
     <div className="p-8 min-h-screen bg-gray-800 w-full">
-      <h1 className="text-3xl font-bold text-gray-100 mb-6">📊 Sales Insight Dashboard</h1>
+      <h1 className="text-3xl font-bold text-gray-100 mb-6">
+        📊 Sales Insight Dashboard
+      </h1>
 
       <div className="bg-white p-6 rounded-2xl shadow-md mb-6 w-1/2">
         <input
@@ -81,13 +95,26 @@ const Dashboard = () => {
       {insights && (
         <div className="bg-white p-6 rounded-2xl shadow-md">
           <h2 className="text-2xl font-semibold mb-4">Insights</h2>
-          <p><strong>Total Rows:</strong> {insights.total_rows}</p>
-          {insights.total_sales && <p><strong>Total Sales:</strong> ${insights.total_sales.toFixed(2)}</p>}
-          {insights.average_sales && <p><strong>Average Sales:</strong> ${insights.average_sales.toFixed(2)}</p>}
+          <p>
+            <strong>Total Rows:</strong> {insights.total_rows}
+          </p>
+          {insights.total_sales && (
+            <p>
+              <strong>Total Sales:</strong> ${insights.total_sales.toFixed(2)}
+            </p>
+          )}
+          {insights.average_sales && (
+            <p>
+              <strong>Average Sales:</strong> $
+              {insights.average_sales.toFixed(2)}
+            </p>
+          )}
 
           {chartData && (
             <div className="mt-6">
-              <h3 className="text-xl font-semibold mb-3">Sales by Product Line</h3>
+              <h3 className="text-xl font-semibold mb-3">
+                Sales by Product Line
+              </h3>
               <Bar data={chartData} />
             </div>
           )}

@@ -30,7 +30,7 @@ app.post("/upload", upload.single("file"), (req, res) => {
   const filePath = req.file.path;
   console.log(`📂 Received file: ${filePath}`);
 
-  const pythonProcess = spawn("python", ["analyze.py", filePath], { shell: true });
+const pythonProcess = spawn("python3", ["analyze.py", filePath], { shell: true });
 
   let output = "";
   let error = "";
