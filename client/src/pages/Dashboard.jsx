@@ -33,7 +33,7 @@ const Dashboard = () => {
 
     setLoading(true);
     try {
-      const response = await axios.post("http://localhost:5000/upload", formData, {
+      const response = await axios.post("https://salesinsight.onrender.com", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       setInsights(response.data);
