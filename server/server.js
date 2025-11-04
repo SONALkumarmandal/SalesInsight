@@ -8,7 +8,7 @@ import path from "path";
 const app = express();
 app.use(
   cors({
-    origin: ["http://localhost:5173"],
+    origin: ["http://localhost:5173", "https://salesinsight.onrender.com"],
     methods: ["GET", "POST"],
     allowedHeaders: ["Content-Type"],
   })
