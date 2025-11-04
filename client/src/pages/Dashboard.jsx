@@ -40,13 +40,7 @@ const Dashboard = () => {
 
     setLoading(true);
     try {
-      const response = await axios.post(
-        import.meta.env.VITE_API_URL,
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
+      const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/upload`, formData);
 
       setInsights(response.data);
     } catch (error) {
