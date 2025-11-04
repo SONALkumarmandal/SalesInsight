@@ -6,7 +6,13 @@ import fs from "fs";
 import path from "path";
 
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "https://salesinsight.onrender.com"],
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type"],
+  })
+);
 app.use(express.json());
 
 // 📁 Make sure uploads directory exists
