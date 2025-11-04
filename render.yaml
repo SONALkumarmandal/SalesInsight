@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: mern-backend
+    env: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+    autoDeploy: true
+
+  - type: web
+    name: mern-frontend
+    env: node
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://mern-backend.onrender.com  # Replace this with your actual backend Render URL

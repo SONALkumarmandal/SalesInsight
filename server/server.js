@@ -1,62 +1,73 @@
 import express from "express";
-import multer from "multer";
 import cors from "cors";
+import multer from "multer";
 import { spawn } from "child_process";
 import fs from "fs";
+import path from "path";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-//  Multer setup for uploads
-const upload = multer({ dest: "uploads/" });
+// 📁 Make sure uploads directory exists
+const uploadDir = path.join(process.cwd(), "uploads");
+if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
 
-// Temporary variable to store last uploaded analysis
-let lastInsights = null;
+// ⚙️ Multer setup
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/");
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + "-" + file.originalname);
+  },
+});
 
-//  Handle CSV upload and run Python analysis
+const upload = multer({ storage });
+
+// 📤 Upload and analyze route
 app.post("/upload", upload.single("file"), (req, res) => {
   const filePath = req.file.path;
   console.log(`📂 Received file: ${filePath}`);
 
   const pythonProcess = spawn("python", ["analyze.py", filePath], { shell: true });
 
-  let dataToSend = "";
-  let errorData = "";
+  let output = "";
+  let error = "";
 
   pythonProcess.stdout.on("data", (data) => {
-    dataToSend += data.toString();
+    output += data.toString();
   });
 
   pythonProcess.stderr.on("data", (data) => {
-    errorData += data.toString();
+    error += data.toString();
   });
 
   pythonProcess.on("close", (code) => {
     if (code !== 0) {
-      console.error(" Python script error:", errorData);
-      return res.status(500).json({ error: "Error analyzing file" });
+      console.error("Python script error:", error);
+      return res.status(500).json({ error: "Error analyzing file", details: error });
     }
 
     try {
-      const result = JSON.parse(dataToSend);
-      lastInsights = result; //  store for later retrieval
+      const result = JSON.parse(output);
       res.json(result);
-    } catch (err) {
-      console.error(" Invalid JSON:", err);
+    } catch (e) {
+      console.error("Invalid JSON from Python:", e);
       res.status(500).json({ error: "Invalid JSON returned from Python" });
     }
 
-    fs.unlinkSync(filePath); // clean up temp file
+    // Cleanup (optional)
+    fs.unlink(filePath, (err) => {
+      if (err) console.warn("⚠️ Failed to delete uploaded file:", err);
+    });
   });
 });
 
-//Endpoint for frontend to fetch latest insights
-app.get("/api/insights", (req, res) => {
-  if (!lastInsights) {
-    return res.status(404).json({ error: "No insights available yet." });
-  }
-  res.json(lastInsights);
+// ✅ Health check route (Render needs this)
+app.get("/", (req, res) => {
+  res.send("✅ Backend is running fine!");
 });
 
-app.listen(5000, () => console.log(" Server running on port 5000"));
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
