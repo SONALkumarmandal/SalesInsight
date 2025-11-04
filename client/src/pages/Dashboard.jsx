@@ -40,20 +40,13 @@ const Dashboard = () => {
 
     setLoading(true);
     try {
-      const res = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/upload`,
-        formData
-      );
+      const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/upload`, formData);
       setInsights(response.data);
     } catch (error) {
       console.error("Error uploading file:", error);
-      if (error.response) {
-        console.error("Server responded with:", error.response.data);
-      } else if (error.request) {
-        console.error("No response received:", error.request);
-      } else {
-        console.error("Error setting up request:", error.message);
-      }
+      alert("Upload failed!");
+    } finally {
+      setLoading(false);
     }
   };
 
